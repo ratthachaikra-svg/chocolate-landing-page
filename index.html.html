@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VELVET BAR — แลนดิ้งเพจช็อคโกแลตแท่ง & ระบบหยิบของแพ็คพัสดุ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf6f2;
+      --surface: #ffffff;
+      --surface-soft: #f3ebe3;
+      --ink: #24160f;
+      --muted: #6e584d;
+      --cocoa: #4b2818;
+      --cocoa-dark: #2f170d;
+      --caramel: #b87333;
+      --caramel-light: #e6b88a;
+      --accent: #9e3b24;
+      --success: #1b6b43;
+      --success-bg: #e7f6ee;
+      --warn: #8a5300;
+      --warn-bg: #fff5e2;
+      --border: #e6d7c8;
+      --radius: 16px;
+      --shadow: 0 12px 32px rgba(36, 22, 15, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    h1, h2, h3, .brand-serif {
+      font-family: 'Playfair Display', 'IBM Plex Sans Thai', serif;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(250, 246, 242, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--cocoa-dark);
+      text-decoration: none;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--cocoa-dark), var(--caramel));
+      color: #fff;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--cocoa-dark);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button, .btn {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform 0.12s ease, opacity 0.15s ease, background 0.15s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cocoa), var(--cocoa-dark));
+      color: #fff;
+    }
+
+    .btn-caramel {
+      background: linear-gradient(135deg, var(--caramel), #96571e);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: var(--surface);
+      color: var(--cocoa-dark);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface-soft);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      border-radius: 8px;
+    }
+
+    .hero {
+      padding: 36px 0 28px;
+    }
+
+    .hero-card {
+      background: linear-gradient(125deg, #28130a 0%, #4d2817 55%, #7c4521 100%);
+      color: #fff;
+      border-radius: 24px;
+      padding: 36px;
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 28px;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      margin-bottom: 14px;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 3.2vw, 2.75rem);
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .hero p {
+      color: rgba(255, 255, 255, 0.88);
+      margin: 0 0 22px;
+      font-size: 0.98rem;
+    }
+
+    .status-strip {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .status-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .pill {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+
+    .pill-ok {
+      background: #c8f3dc;
+      color: #0e4a2b;
+    }
+
+    .pill-warn {
+      background: #ffe8bd;
+      color: #6b4000;
+    }
+
+    .section {
+      padding: 28px 0;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .section-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .sku-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 20px;
+    }
+
+    .sku-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sku-img-wrap {
+      position: relative;
+      height: 190px;
+      background: var(--surface-soft);
+      overflow: hidden;
+    }
+
+    .sku-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .sku-code-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(36, 22, 15, 0.85);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .bin-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #fff;
+      color: var(--cocoa-dark);
+      padding: 4px 9px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+    }
+
+    .sku-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .sku-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .sku-desc {
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin: 0 0 14px;
+      flex: 1;
+    }
+
+    .sku-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .price {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--cocoa-dark);
+    }
+
+    .price small {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .qty-ctrl {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border-radius: 7px;
+      background: var(--surface-soft);
+      color: var(--cocoa-dark);
+      font-weight: 700;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cocoa-dark);
+    }
+
+    input, select, textarea {
+      font-family: inherit;
+      font-size: 0.92rem;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--ink);
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--caramel-light);
+      border-color: var(--caramel);
+    }
+
+    .summary-box {
+      background: var(--surface-soft);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--cocoa-dark);
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      margin-top: 6px;
+    }
+
+    .order-selector-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .pick-list {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .pick-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .pick-row:last-child {
+      border-bottom: none;
+    }
+
+    .pick-row.checked {
+      background: var(--success-bg);
+    }
+
+    .pick-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pick-left input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--success);
+      cursor: pointer;
+    }
+
+    .shipping-label {
+      border: 2px dashed var(--cocoa-dark);
+      border-radius: 14px;
+      padding: 18px;
+      background: #fffdf9;
+    }
+
+    .label-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid var(--cocoa-dark);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .label-boxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .label-box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      font-size: 0.86rem;
+    }
+
+    .label-box strong {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .label-items {
+      background: var(--surface-soft);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      margin-bottom: 12px;
+    }
+
+    .label-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--surface-soft);
+      color: var(--cocoa-dark);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .st-pending {
+      background: var(--warn-bg);
+      color: var(--warn);
+    }
+
+    .st-packed {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    pre.code-box {
+      background: #1b1411;
+      color: #f8e9d8;
+      padding: 16px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      max-height: 340px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 11, 6, 0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 18px;
+      max-width: 560px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .alert-banner {
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      font-size: 0.88rem;
+      display: none;
+    }
+
+    .alert-banner.show {
+      display: block;
+    }
+
+    .alert-success {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid #a6dec0;
+    }
+
+    .alert-error {
+      background: #fdeceb;
+      color: #9e2219;
+      border: 1px solid #f5b7b1;
+    }
+
+    @media (max-width: 880px) {
+      .hero-card, .two-col {
+        grid-template-columns: 1fr;
+      }
+      .form-grid, .label-boxes {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printableLabelArea, #printableLabelArea * {
+        visibility: visible;
+      }
+      #printableLabelArea {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 20px;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar no-print">
+    <div class="container topbar-inner">
+      <a href="#top" class="brand">
+        <span class="brand-badge">🍫</span>
+        <span class="brand-serif">VELVET CRAFT BAR</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#products">ช็อคโกแลตแท่ง (4 SKUs)</a>
+        <a href="#checkout">สั่งซื้อ & ส่งเข้า Sheet</a>
+        <a href="#fulfillment">หยิบของ / แพ็ค / จ่าหน้า</a>
+        <a href="#apps-script">โค้ด Apps Script</a>
+      </nav>
+
+      <div class="topbar-actions">
+        <button class="btn btn-outline btn-sm" onclick="openSettingsModal()">⚙️ ตั้งค่า Sheet / GitHub</button>
+        <a href="#checkout" class="btn btn-primary btn-sm">🛒 ตะกร้า (<span id="topCartCount">0</span>)</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="top" class="hero no-print">
+    <div class="container">
+      <div class="hero-card">
+        <div>
+          <span class="hero-tag">Craft Chocolate Bars • Google Sheet + GitHub + Vercel</span>
+          <h1>ช็อคโกแลตแท่งคราฟต์ พร้อมระบบสั่งซื้อ หยิบของ แพ็ค และจ่าหน้าพัสดุ</h1>
+          <p>
+            รองรับสินค้าช็อคโกแลตแท่งหลาย SKU บันทึกคำสั่งซื้อลง Google Sheet อัตโนมัติ
+            ดึงรูปจากโฟลเดอร์แยกใน GitHub และออกใบจ่าหน้าพัสดุพร้อมพิมพ์ส่งลูกค้าได้ทันที
+          </p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="#products" class="btn btn-caramel">เลือกช็อคโกแลตแท่ง</a>
+            <button class="btn btn-outline" onclick="openSettingsModal()">ตั้งค่า URL ชีตและโฟลเดอร์รูป</button>
+          </div>
+        </div>
+
+        <div class="status-strip">
+          <div class="status-row">
+            <span>สถานะ Google Sheet</span>
+            <span id="sheetStatusPill" class="pill pill-warn">ยังไม่ได้ตั้งค่า URL</span>
+          </div>
+          <div class="status-row">
+            <span>โฟลเดอร์รูป GitHub</span>
+            <span id="githubStatusPill" class="pill pill-warn">ใช้รูปสำรองอัตโนมัติ</span>
+          </div>
+          <div class="status-row">
+            <span>จำนวนสินค้าช็อคโกแลต</span>
+            <span class="pill pill-ok">4 SKUs พร้อมขาย</span>
+          </div>
+          <div class="status-row">
+            <span>คำสั่งซื้อในระบบ</span>
+            <strong id="heroOrderCount">0 ออเดอร์</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="products" class="section no-print">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>1. เลือกช็อคโกแลตแท่ง (SKUs)</h2>
+          <p>รูปภาพดึงจากโฟลเดอร์ <code>images/</code> บน GitHub (หากยังไม่ใส่ URL จะแสดงภาพสำรองให้ทันที)</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addSampleBundle()">+ เพิ่มเซ็ตชิมครบ 4 รส</button>
+      </div>
+
+      <div id="skuGrid" class="sku-grid"></div>
+    </div>
+  </section>
+
+  <section id="checkout" class="section no-print">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>2. ตะกร้าสินค้า & บันทึกคำสั่งซื้อลง Google Sheet</h2>
+          <p>กรอกข้อมูลผู้รับให้ครบ แล้วกดบันทึกเพื่อส่งข้อมูลเข้า Google Sheet และสร้างคิวหยิบสินค้า</p>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <h3 style="margin-bottom:12px;">🛒 รายการช็อคโกแลตในตะกร้า</h3>
+          <div id="cartItemsContainer"></div>
+
+          <div class="summary-box" style="margin-top:16px;">
+            <div class="summary-line">
+              <span>จำนวนแท่งรวม</span>
+              <strong id="summaryTotalQty">0 แท่ง</strong>
+            </div>
+            <div class="summary-line">
+              <span>ค่าจัดส่ง</span>
+              <strong id="summaryShipping">฿40</strong>
+            </div>
+            <div class="summary-total">
+              <span>ยอดชำระสุทธิ</span>
+              <span id="summaryGrandTotal">฿0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3 style="margin-bottom:12px;">📦 ข้อมูลผู้รับพัสดุ</h3>
+          <div id="orderAlert" class="alert-banner"></div>
+
+          <form id="orderForm" onsubmit="submitOrder(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="custName">ชื่อ-นามสกุลผู้รับ *</label>
+                <input type="text" id="custName" required placeholder="เช่น กัญญา ใจดี" />
+              </div>
+
+              <div class="form-group">
+                <label for="custPhone">เบอร์โทรศัพท์ *</label>
+                <input type="tel" id="custPhone" required placeholder="เช่น 081-234-5678" />
+              </div>
+
+              <div class="form-group full">
+                <label for="custAddress">ที่อยู่จัดส่ง (บ้านเลขที่ ถนน แขวง/ตำบล เขต/อำเภอ จังหวัด รหัสไปรษณีย์) *</label>
+                <textarea id="custAddress" rows="3" required placeholder="เช่น 99/12 ซ.สุขุมวิท 24 แขวงคลองตัน เขตคลองเตย กทม. 10110"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="shippingMethod">ขนส่ง / รูปแบบการส่ง</label>
+                <select id="shippingMethod" onchange="renderCart()">
+                  <option value="Kerry / Flash Express (40 บาท)" data-fee="40">Kerry / Flash Express (฿40)</option>
+                  <option value="Cold Pack เก็บความเย็น (70 บาท)" data-fee="70">Cold Pack เก็บความเย็น (฿70)</option>
+                  <option value="ส่งฟรีโปรโมชัน (0 บาท)" data-fee="0">ส่งฟรีโปรโมชัน (฿0)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="orderNote">หมายเหตุถึงคนแพ็คของ</label>
+                <input type="text" id="orderNote" placeholder="เช่น ใส่ถุงกระดาษ, ระวังละลาย" />
+              </div>
+            </div>
+
+            <button type="submit" id="submitOrderBtn" class="btn btn-primary" style="width:100%; padding:13px;">
+              💾 บันทึกคำสั่งซื้อลง Google Sheet & สร้างใบหยิบของ
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fulfillment" class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>3. หยิบสินค้า แพ็คของ & จ่าหน้าพัสดุส่งลูกค้า</h2>
+          <p>เลือกคำสั่งซื้อ ติ๊กเช็คสินค้าตามรหัส SKU และตำแหน่งชั้นวาง แล้วพิมพ์ใบจ่าหน้าพัสดุได้เลย</p>
+        </div>
+        <button class="btn btn-outline btn-sm no-print" onclick="loadOrdersFromSheet()">🔄 ซิงค์ออเดอร์จาก Google Sheet</button>
+      </div>
+
+      <div class="two-col">
+        <div class="panel no-print">
+          <div class="order-selector-row">
+            <label for="fulfillmentOrderSelect" style="margin:0;">เลือกคำสั่งซื้อ:</label>
+            <select id="fulfillmentOrderSelect" onchange="selectOrderForFulfillment(this.value)" style="flex:1; min-width:220px;"></select>
+          </div>
+
+          <div id="pickingChecklistContainer"></div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+            <button type="button" class="btn btn-success" onclick="confirmPackedOrder()">
+              ✅ ยืนยันแพ็คสินค้าเสร็จสิ้น
+            </button>
+            <button type="button" class="btn btn-outline" onclick="printShippingLabel()">
+              🖨️ พิมพ์ใบปะหน้าพัสดุ
+            </button>
+          </div>
+        </div>
+
+        <div class="panel" id="printableLabelArea">
+          <div id="shippingLabelContainer"></div>
+        </div>
+      </div>
+
+      <div class="panel no-print" style="margin-top:22px;">
+        <h3 style="margin-bottom:12px;">📋 รายการคำสั่งซื้อทั้งหมดในระบบ</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>เวลา</th>
+                <th>ผู้รับ / เบอร์โทร</th>
+                <th>รายการ SKU</th>
+                <th>ยอดรวม</th>
+                <th>สถานะแพ็ค</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="apps-script" class="section no-print">
+    <div class="container">
+      <div class="panel">
+        <div class="section-head" style="margin-bottom:10px;">
+          <div>
+            <h2>4. โค้ดสำหรับนำไปวางใน Google Apps Script</h2>
+            <p>คัดลอกโค้ดนี้ไปวางใน <strong>Extensions &gt; Apps Script</strong> ของ Google Sheet แล้ว Deploy เป็น Web app</p>
+          </div>
+          <button class="btn btn-caramel btn-sm" onclick="copyGasCode()">📋 คัดลอกโค้ด Google Apps Script</button>
+        </div>
+
+        <pre id="gasCodeBlock" class="code-box">const SHEET_NAME = 'Orders';
+
+function getOrCreateSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+  }
+  const headers = [
+    'Timestamp',
+    'Order ID',
+    'Customer Name',
+    'Phone',
+    'Address',
+    'Shipping Method',
+    'Items Summary',
+    'Total Qty',
+    'Grand Total',
+    'Note',
+    'Pack Status'
+  ];
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(headers);
+  }
+  return sheet;
+}
+
+function doPost(e) {
+  try {
+    const sheet = getOrCreateSheet();
+    const data = JSON.parse(e.postData.contents);
+
+    if (data.action === 'updateStatus') {
+      const values = sheet.getDataRange().getValues();
+      for (let i = 1; i &lt; values.length; i++) {
+        if (String(values[i][1]) === String(data.orderId)) {
+          sheet.getRange(i + 1, 11).setValue(data.packStatus || 'PACKED');
+          return jsonResponse({ ok: true, updated: data.orderId });
+        }
+      }
+      return jsonResponse({ ok: false, error: 'Order not found' });
+    }
+
+    const row = [
+      data.timestamp || new Date().toISOString(),
+      data.orderId || '',
+      data.customerName || '',
+      data.phone || '',
+      data.address || '',
+      data.shippingMethod || '',
+      data.itemsSummary || '',
+      data.totalQty || 0,
+      data.grandTotal || 0,
+      data.note || '',
+      data.packStatus || 'PENDING'
+    ];
+
+    sheet.appendRow(row);
+    return jsonResponse({ ok: true, orderId: data.orderId });
+  } catch (err) {
+    return jsonResponse({ ok: false, error: err.message });
+  }
+}
+
+function doGet() {
+  try {
+    const sheet = getOrCreateSheet();
+    const rows = sheet.getDataRange().getValues();
+    if (rows.length &lt;= 1) {
+      return jsonResponse({ ok: true, orders: [] });
+    }
+
+    const orders = [];
+    for (let i = rows.length - 1; i &gt;= 1; i--) {
+      const r = rows[i];
+      if (!r[1]) continue;
+      orders.push({
+        timestamp: r[0],
+        orderId: String(r[1]),
+        customerName: String(r[2] || ''),
+        phone: String(r[3] || ''),
+        address: String(r[4] || ''),
+        shippingMethod: String(r[5] || ''),
+        itemsSummary: String(r[6] || ''),
+        totalQty: Number(r[7] || 0),
+        grandTotal: Number(r[8] || 0),
+        note: String(r[9] || ''),
+        packStatus: String(r[10] || 'PENDING')
+      });
+    }
+
+    return jsonResponse({ ok: true, orders: orders });
+  } catch (err) {
+    return jsonResponse({ ok: false, error: err.message });
+  }
+}
+
+function jsonResponse(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <div id="settingsModal" class="modal-backdrop no-print" onclick="if(event.target===this) closeSettingsModal()">
+    <div class="modal">
+      <h3 style="margin-bottom:6px;">⚙️ ตั้งค่า Google Apps Script & โฟลเดอร์รูป GitHub</h3>
+      <p style="color:var(--muted); font-size:0.86rem; margin:0 0 16px;">
+        ค่าเหล่านี้จะถูกบันทึกไว้ในเบราว์เซอร์ของคุณ
+      </p>
+
+      <div class="form-group">
+        <label for="gasUrlInput">Google Apps Script Web App URL</label>
+        <input type="url" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec" />
+      </div>
+
+      <div class="form-group">
+        <label for="githubImagesBaseInput">โฟลเดอร์รูปภาพบน GitHub (Raw URL ของโฟลเดอร์ images)</label>
+        <input type="url" id="githubImagesBaseInput" placeholder="https://raw.githubusercontent.com/<user>/<repo>/main/images" />
+      </div>
+
+      <div class="form-group">
+        <label for="senderInfoInput">ข้อมูลผู้ส่งบนใบจ่าหน้าพัสดุ</label>
+        <input type="text" id="senderInfoInput" placeholder="VELVET CRAFT BAR • โทร 02-000-1234 • กทม. 10110" />
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+        <button class="btn btn-outline" onclick="closeSettingsModal()">ยกเลิก</button>
+        <button class="btn btn-primary" onclick="saveSettings()">บันทึกการตั้งค่า</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SKU_CATALOG = [
+      {
+        sku: 'CHOC-70',
+        name: 'Dark Chocolate 70% Single Origin',
+        desc: 'ดาร์กช็อคโกแลตเข้มข้น 70% กลิ่นคั่วเมล็ดโกโก้ชัดเจน หวานน้อย',
+        price: 120,
+        bin: 'ชั้น A-01',
+        imageFile: 'sku-choc-70.jpg',
+        fallbackSvg: makeSvgDataUri('#3b1c0e', '#c98a5b', '70% DARK')
+      },
+      {
+        sku: 'MILK-CRM',
+        name: 'Salted Caramel Milk Chocolate',
+        desc: 'มิลค์ช็อคโกแลตเนื้อเนียน ผสานคาราเมลหอมละมุนตัดเค็มปลายลิ้น',
+        price: 115,
+        bin: 'ชั้น A-02',
+        imageFile: 'sku-milk-caramel.jpg',
+        fallbackSvg: makeSvgDataUri('#6b3b1e', '#f2be85', 'MILK CARAMEL')
+      },
+      {
+        sku: 'ALMD-SLT',
+        name: 'Roasted Almond & Sea Salt Bar',
+        desc: 'อัลมอนด์อบกรอบเต็มคำ โรยเกลือทะเลบางๆ เคี้ยวเพลินทุกแท่ง',
+        price: 135,
+        bin: 'ชั้น B-01',
+        imageFile: 'sku-almond-sea.jpg',
+        fallbackSvg: makeSvgDataUri('#4a2514', '#e3b077', 'ALMOND SALT')
+      },
+      {
+        sku: 'MTCH-YUZ',
+        name: 'Matcha Yuzu White Chocolate',
+        desc: 'ไวท์ช็อคโกแลตหอมมัทฉะ สดชื่นตัดรสส้มยูซุเปรี้ยวอมหวานกำลังดี',
+        price: 130,
+        bin: 'ชั้น B-02',
+        imageFile: 'sku-matcha-yuzu.jpg',
+        fallbackSvg: makeSvgDataUri('#2f4f2f', '#d9e079', 'MATCHA YUZU')
+      }
+    ];
+
+    const STORAGE_KEYS = {
+      settings: 'velvet_choc_settings_v1',
+      orders: 'velvet_choc_orders_v1'
+    };
+
+    let state = {
+      settings: {
+        gasUrl: '',
+        githubImagesBase: '',
+        senderInfo: 'VELVET CRAFT BAR • โทร 02-555-8899 • 123 ถ.พระราม 4 เขตปทุมวัน กทม. 10330'
+      },
+      cart: {
+        'CHOC-70': 1,
+        'MILK-CRM': 1
+      },
+      orders: [],
+      selectedOrderId: '',
+      checkedPickKeys: {}
+    };
+
+    function makeSvgDataUri(bg, accent, label) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="360" viewBox="0 0 600 360">
+        <rect width="600" height="360" fill="${bg}"/>
+        <rect x="85" y="65" width="430" height="230" rx="22" fill="#ffffff" fill-opacity="0.1" stroke="${accent}" stroke-width="3"/>
+        <text x="300" y="165" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="34" font-weight="bold">${label}</text>
+        <text x="300" y="212" text-anchor="middle" fill="${accent}" font-family="sans-serif" font-size="18">CHOCOLATE BAR SKU</text>
+      </svg>`;
+      return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }
+
+    function getSkuImageUrl(item) {
+      const base = (state.settings.githubImagesBase || '').trim().replace(/\/+$/, '');
+      if (!base) return item.fallbackSvg;
+      return `${base}/${item.imageFile}`;
+    }
+
+    function initApp() {
+      loadFromStorage();
+      renderStatusBadges();
+      renderSkuGrid();
+      renderCart();
+      renderFulfillmentAndTable();
+    }
+
+    function loadFromStorage() {
+      try {
+        const savedSettings = JSON.parse(localStorage.getItem(STORAGE_KEYS.settings) || '{}');
+        state.settings = { ...state.settings, ...savedSettings };
+      } catch (_) {}
+
+      try {
+        const savedOrders = JSON.parse(localStorage.getItem(STORAGE_KEYS.orders) || '[]');
+        if (Array.isArray(savedOrders) && savedOrders.length > 0) {
+          state.orders = savedOrders;
+          state.selectedOrderId = savedOrders[0].orderId;
+        } else {
+          const sampleOrder = {
+            orderId: 'ORD-1001',
+            timestamp: new Date().toLocaleString('th-TH'),
+            customerName: 'สมชาย รักช็อคโกแลต',
+            phone: '089-111-2233',
+            address: '45/8 หมู่ 4 ต.สุเทพ อ.เมือง จ.เชียงใหม่ 50200',
+            shippingMethod: 'Kerry / Flash Express (40 บาท)',
+            items: [
+              { sku: 'CHOC-70', name: 'Dark Chocolate 70% Single Origin', qty: 2, price: 120, bin: 'ชั้น A-01' },
+              { sku: 'ALMD-SLT', name: 'Roasted Almond & Sea Salt Bar', qty: 1, price: 135, bin: 'ชั้น B-01' }
+            ],
+            itemsSummary: 'CHOC-70 x2, ALMD-SLT x1',
+            totalQty: 3,
+            grandTotal: 415,
+            note: 'ตัวอย่างคำสั่งซื้อสำหรับทดสอบหยิบของและจ่าหน้า',
+            packStatus: 'PENDING'
+          };
+          state.orders = [sampleOrder];
+          state.selectedOrderId = sampleOrder.orderId;
+          localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(state.orders));
+        }
+      } catch (_) {}
+    }
+
+    function saveOrdersToStorage() {
+      localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(state.orders));
+    }
+
+    function renderStatusBadges() {
+      const sheetPill = document.getElementById('sheetStatusPill');
+      const ghPill = document.getElementById('githubStatusPill');
+      const countEl = document.getElementById('heroOrderCount');
+
+      if (state.settings.gasUrl) {
+        sheetPill.textContent = 'เชื่อมต่อ Web App แล้ว';
+        sheetPill.className = 'pill pill-ok';
+      } else {
+        sheetPill.textContent = 'ยังไม่ได้ตั้งค่า URL';
+        sheetPill.className = 'pill pill-warn';
+      }
+
+      if (state.settings.githubImagesBase) {
+        ghPill.textContent = 'ใช้รูปจาก GitHub';
+        ghPill.className = 'pill pill-ok';
+      } else {
+        ghPill.textContent = 'ใช้รูปสำรองอัตโนมัติ';
+        ghPill.className = 'pill pill-warn';
+      }
+
+      countEl.textContent = `${state.orders.length} ออเดอร์`;
+    }
+
+    function renderSkuGrid() {
+      const grid = document.getElementById('skuGrid');
+      grid.innerHTML = SKU_CATALOG.map(item => `
+        <article class="sku-card">
+          <div class="sku-img-wrap">
+            <img
+              src="${getSkuImageUrl(item)}"
+              alt="${item.name}"
+              onerror="this.onerror=null; this.src='${item.fallbackSvg}';"
+            />
+            <span class="sku-code-badge">${item.sku}</span>
+            <span class="bin-badge">${item.bin}</span>
+          </div>
+          <div class="sku-body">
+            <div class="sku-title">${item.name}</div>
+            <p class="sku-desc">${item.desc}</p>
+            <div class="sku-footer">
+              <div class="price">฿${item.price} <small>/ แท่ง</small></div>
+              <button class="btn btn-primary btn-sm" onclick="addToCart('${item.sku}')">+ หยิบใส่ตะกร้า</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function addToCart(sku) {
+      state.cart[sku] = (state.cart[sku] || 0) + 1;
+      renderCart();
+    }
+
+    function changeCartQty(sku, delta) {
+      const next = (state.cart[sku] || 0) + delta;
+      if (next <= 0) {
+        delete state.cart[sku];
+      } else {
+        state.cart[sku] = next;
+      }
+      renderCart();
+    }
+
+    function addSampleBundle() {
+      SKU_CATALOG.forEach(item => {
+        state.cart[item.sku] = (state.cart[item.sku] || 0) + 1;
+      });
+      renderCart();
+    }
+
+    function getCartDetailedItems() {
+      return Object.entries(state.cart)
+        .map(([sku, qty]) => {
+          const product = SKU_CATALOG.find(p => p.sku === sku);
+          if (!product || qty <= 0) return null;
+          return { ...product, qty, subtotal: product.price * qty };
+        })
+        .filter(Boolean);
+    }
+
+    function renderCart() {
+      const items = getCartDetailedItems();
+      const container = document.getElementById('cartItemsContainer');
+      const totalQty = items.reduce((sum, i) => sum + i.qty, 0);
+      const itemsSubtotal = items.reduce((sum, i) => sum + i.subtotal, 0);
+
+      const shippingSelect = document.getElementById('shippingMethod');
+      const selectedOption = shippingSelect ? shippingSelect.options[shippingSelect.selectedIndex] : null;
+      const shippingFee = items.length > 0 && selectedOption ? Number(selectedOption.dataset.fee || 0) : 0;
+      const grandTotal = itemsSubtotal + shippingFee;
+
+      document.getElementById('topCartCount').textContent = totalQty;
+      document.getElementById('summaryTotalQty').textContent = `${totalQty} แท่ง`;
+      document.getElementById('summaryShipping').textContent = `฿${shippingFee}`;
+      document.getElementById('summaryGrandTotal').textContent = `฿${grandTotal.toLocaleString()}`;
+
+      if (items.length === 0) {
+        container.innerHTML = `<p style="color:var(--muted); text-align:center; padding:24px 0;">ยังไม่มีช็อคโกแลตในตะกร้า กรุณาเลือกอย่างน้อย 1 SKU</p>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="cart-item">
+          <div>
+            <strong>${item.name}</strong>
+            <div style="font-size:0.8rem; color:var(--muted);">รหัส ${item.sku} • ${item.bin} • ฿${item.price}/แท่ง</div>
+          </div>
+          <div class="qty-ctrl">
+            <button type="button" class="qty-btn" onclick="changeCartQty('${item.sku}', -1)">-</button>
+            <span style="min-width:24px; text-align:center; font-weight:700;">${item.qty}</span>
+            <button type="button" class="qty-btn" onclick="changeCartQty('${item.sku}', 1)">+</button>
+            <span style="min-width:66px; text-align:right; font-weight:700; margin-left:4px;">฿${item.subtotal}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function submitOrder(event) {
+      event.preventDefault();
+      const alertBox = document.getElementById('orderAlert');
+      alertBox.className = 'alert-banner';
+
+      const items = getCartDetailedItems();
+      if (items.length === 0) {
+        alertBox.textContent = 'กรุณาเลือกช็อคโกแลตแท่งอย่างน้อย 1 รายการก่อนสั่งซื้อ';
+        alertBox.className = 'alert-banner show alert-error';
+        return;
+      }
+
+      const customerName = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const address = document.getElementById('custAddress').value.trim();
+      const shippingSelect = document.getElementById('shippingMethod');
+      const shippingMethod = shippingSelect.value;
+      const shippingFee = Number(shippingSelect.options[shippingSelect.selectedIndex].dataset.fee || 0);
+      const note = document.getElementById('orderNote').value.trim();
+
+      const totalQty = items.reduce((s, i) => s + i.qty, 0);
+      const itemsSubtotal = items.reduce((s, i) => s + i.subtotal, 0);
+      const grandTotal = itemsSubtotal + shippingFee;
+      const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+      const timestamp = new Date().toLocaleString('th-TH');
+      const itemsSummary = items.map(i => `${i.sku} x${i.qty}`).join(', ');
+
+      const newOrder = {
+        orderId,
+        timestamp,
+        customerName,
+        phone,
+        address,
+        shippingMethod,
+        items: items.map(i => ({
+          sku: i.sku,
+          name: i.name,
+          qty: i.qty,
+          price: i.price,
+          bin: i.bin
+        })),
+        itemsSummary,
+        totalQty,
+        grandTotal,
+        note,
+        packStatus: 'PENDING'
+      };
+
+      const btn = document.getElementById('submitOrderBtn');
+      btn.disabled = true;
+      btn.textContent = 'กำลังบันทึกคำสั่งซื้อ...';
+
+      let sheetSynced = false;
+      if (state.settings.gasUrl) {
+        try {
+          await fetch(state.settings.gasUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              action: 'createOrder',
+              ...newOrder
+            })
+          });
+          sheetSynced = true;
+        } catch (err) {
+          console.error('GAS error:', err);
+        }
+      }
+
+      state.orders.unshift(newOrder);
+      state.selectedOrderId = newOrder.orderId;
+      saveOrdersToStorage();
+      renderStatusBadges();
+      renderFulfillmentAndTable();
+
+      state.cart = {};
+      renderCart();
+      document.getElementById('orderForm').reset();
+
+      btn.disabled = false;
+      btn.textContent = '💾 บันทึกคำสั่งซื้อลง Google Sheet & สร้างใบหยิบของ';
+
+      alertBox.textContent = sheetSynced
+        ? `สร้างคำสั่งซื้อ ${orderId} และส่งข้อมูลไปยัง Google Sheet เรียบร้อยแล้ว สามารถหยิบของและพิมพ์ใบปะหน้าด้านล่างได้ทันที`
+        : `สร้างคำสั่งซื้อ ${orderId} ในระบบแล้ว (หมายเหตุ: ยังไม่ได้ตั้งค่า Google Apps Script URL จึงบันทึกในเครื่อง — กดปุ่ม "ตั้งค่า Sheet / GitHub" เพื่อเชื่อมต่อชีตจริง)`;
+      alertBox.className = 'alert-banner show alert-success';
+    }
+
+    function parseItemsFromSummary(summaryStr) {
+      if (!summaryStr) return [];
+      return summaryStr.split(',').map(part => {
+        const match = part.trim().match(/^([A-Z0-9-]+)\s*x(\d+)$/i);
+        if (!match) return { sku: 'SKU', name: part.trim(), qty: 1, bin: 'ชั้น A-01' };
+        const sku = match[1].toUpperCase();
+        const qty = Number(match[2] || 1);
+        const found = SKU_CATALOG.find(p => p.sku === sku);
+        return {
+          sku,
+          name: found ? found.name : sku,
+          qty,
+          bin: found ? found.bin : 'ชั้น A-01'
+        };
+      });
+    }
+
+    function getOrderLineItems(order) {
+      if (Array.isArray(order.items) && order.items.length > 0) {
+        return order.items;
+      }
+      return parseItemsFromSummary(order.itemsSummary);
+    }
+
+    function selectOrderForFulfillment(orderId) {
+      state.selectedOrderId = orderId;
+      renderFulfillmentAndTable();
+    }
+
+    function togglePickItem(orderId, sku) {
+      const key = `${orderId}__${sku}`;
+      state.checkedPickKeys[key] = !state.checkedPickKeys[key];
+      renderPickingChecklist();
+    }
+
+    async function confirmPackedOrder() {
+      const order = state.orders.find(o => o.orderId === state.selectedOrderId);
+      if (!order) return;
+
+      order.packStatus = 'PACKED';
+      saveOrdersToStorage();
+
+      if (state.settings.gasUrl) {
+        try {
+          await fetch(state.settings.gasUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              action: 'updateStatus',
+              orderId: order.orderId,
+              packStatus: 'PACKED'
+            })
+          });
+        } catch (_) {}
+      }
+
+      renderFulfillmentAndTable();
+      const alertBox = document.getElementById('orderAlert');
+      if (alertBox) {
+        alertBox.textContent = `ยืนยันแพ็คคำสั่งซื้อ ${order.orderId} เรียบร้อยแล้ว`;
+        alertBox.className = 'alert-banner show alert-success';
+      }
+    }
+
+    function printShippingLabel() {
+      window.print();
+    }
+
+    function renderFulfillmentAndTable() {
+      const selectEl = document.getElementById('fulfillmentOrderSelect');
+      const tbody = document.getElementById('ordersTableBody');
+
+      if (state.orders.length === 0) {
+        selectEl.innerHTML = `<option value="">ไม่มีคำสั่งซื้อ</option>`;
+        document.getElementById('pickingChecklistContainer').innerHTML = `<p style="color:var(--muted);">ยังไม่มีคำสั่งซื้อให้หยิบสินค้า</p>`;
+        document.getElementById('shippingLabelContainer').innerHTML = `<p style="color:var(--muted);">ยังไม่มีใบจ่าหน้าพัสดุ</p>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--muted);">ยังไม่มีข้อมูลคำสั่งซื้อ</td></tr>`;
+        return;
+      }
+
+      if (!state.orders.some(o => o.orderId === state.selectedOrderId)) {
+        state.selectedOrderId = state.orders[0].orderId;
+      }
+
+      selectEl.innerHTML = state.orders.map(o => `
+        <option value="${o.orderId}" ${o.orderId === state.selectedOrderId ? 'selected' : ''}>
+          ${o.orderId} — ${o.customerName} (${o.totalQty} แท่ง) [${o.packStatus === 'PACKED' ? 'แพ็คแล้ว' : 'รอหยิบของ'}]
+        </option>
+      `).join('');
+
+      renderPickingChecklist();
+      renderShippingLabel();
+
+      tbody.innerHTML = state.orders.map(o => `
+        <tr>
+          <td><strong>${o.orderId}</strong></td>
+          <td>${o.timestamp || '-'}</td>
+          <td>
+            <strong>${o.customerName}</strong><br/>
+            <span style="color:var(--muted);">${o.phone}</span>
+          </td>
+          <td>${o.itemsSummary} (${o.totalQty} แท่ง)</td>
+          <td><strong>฿${Number(o.grandTotal || 0).toLocaleString()}</strong></td>
+          <td>
+            <span class="badge-status ${o.packStatus === 'PACKED' ? 'st-packed' : 'st-pending'}">
+              ${o.packStatus === 'PACKED' ? 'แพ็คแล้ว' : 'รอหยิบของ'}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="selectOrderForFulfillment('${o.orderId}'); document.getElementById('fulfillment').scrollIntoView({behavior:'smooth'});">
+              หยิบของ / ใบปะหน้า
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderPickingChecklist() {
+      const container = document.getElementById('pickingChecklistContainer');
+      const order = state.orders.find(o => o.orderId === state.selectedOrderId);
+      if (!order) return;
+
+      const lineItems = getOrderLineItems(order);
+
+      container.innerHTML = `
+        <div style="margin-bottom:10px; font-size:0.88rem; color:var(--muted);">
+          คำสั่งซื้อ <strong>${order.orderId}</strong> • วิธีส่ง: <strong>${order.shippingMethod}</strong>
+          ${order.note ? `<br/>หมายเหตุ: <span style="color:var(--accent); font-weight:600;">${order.note}</span>` : ''}
+        </div>
+        <div class="pick-list">
+          ${lineItems.map(item => {
+            const key = `${order.orderId}__${item.sku}`;
+            const checked = !!state.checkedPickKeys[key];
+            return `
+              <div class="pick-row ${checked ? 'checked' : ''}">
+                <div class="pick-left">
+                  <input type="checkbox" ${checked ? 'checked' : ''} onchange="togglePickItem('${order.orderId}', '${item.sku}')" />
+                  <div>
+                    <strong>${item.sku}</strong> — ${item.name}
+                    <div style="font-size:0.8rem; color:var(--muted);">ตำแหน่งชั้นวาง: <strong>${item.bin}</strong></div>
+                  </div>
+                </div>
+                <div style="font-weight:700; font-size:1rem;">x ${item.qty} แท่ง</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderShippingLabel() {
+      const container = document.getElementById('shippingLabelContainer');
+      const order = state.orders.find(o => o.orderId === state.selectedOrderId);
+      if (!order) return;
+
+      const lineItems = getOrderLineItems(order);
+      const isPacked = order.packStatus === 'PACKED';
+
+      container.innerHTML = `
+        <div class="shipping-label">
+          <div class="label-top">
+            <div>
+              <div style="font-size:0.75rem; font-weight:700; color:var(--muted);">PARCEL SHIPPING LABEL • ใบจ่าหน้าพัสดุ</div>
+              <div style="font-size:1.25rem; font-weight:700; color:var(--cocoa-dark);">${order.orderId}</div>
+            </div>
+            <div style="text-align:right;">
+              <span class="badge-status ${isPacked ? 'st-packed' : 'st-pending'}">
+                ${isPacked ? 'PACKED / พร้อมส่ง' : 'WAITING PACK / รอแพ็ค'}
+              </span>
+              <div style="font-size:0.8rem; font-weight:700; margin-top:4px;">${order.shippingMethod}</div>
+            </div>
+          </div>
+
+          <div class="label-boxes">
+            <div class="label-box">
+              <strong>ผู้ส่ง (SENDER)</strong>
+              <div>${state.settings.senderInfo}</div>
+            </div>
+            <div class="label-box" style="border-color:var(--cocoa-dark);">
+              <strong>ผู้รับ (RECIPIENT)</strong>
+              <div style="font-size:1rem; font-weight:700;">${order.customerName}</div>
+              <div>โทร: <strong>${order.phone}</strong></div>
+              <div style="margin-top:4px;">${order.address}</div>
+            </div>
+          </div>
+
+          <div class="label-items">
+            <strong style="display:block; margin-bottom:6px;">รายการสินค้าในกล่อง (รวม ${order.totalQty} แท่ง):</strong>
+            ${lineItems.map(i => `<div>• [${i.sku}] ${i.name} — <strong>${i.qty} แท่ง</strong> (${i.bin})</div>`).join('')}
+            ${order.note ? `<div style="margin-top:6px; color:var(--accent);"><strong>หมายเหตุ:</strong> ${order.note}</div>` : ''}
+          </div>
+
+          <div class="label-footer">
+            <span>วันที่บันทึก: ${order.timestamp || '-'}</span>
+            <span>ยอดรวม: <strong>฿${Number(order.grandTotal || 0).toLocaleString()}</strong></span>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadOrdersFromSheet() {
+      if (!state.settings.gasUrl) {
+        const alertBox = document.getElementById('orderAlert');
+        if (alertBox) {
+          alertBox.textContent = 'กรุณาตั้งค่า Google Apps Script Web App URL ที่ปุ่ม "ตั้งค่า Sheet / GitHub" ก่อนครับ';
+          alertBox.className = 'alert-banner show alert-error';
+        }
+        return;
+      }
+
+      try {
+        const res = await fetch(state.settings.gasUrl);
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.orders)) {
+          state.orders = data.orders.map(o => ({
+            ...o,
+            items: parseItemsFromSummary(o.itemsSummary)
+          }));
+          if (state.orders.length > 0) {
+            state.selectedOrderId = state.orders[0].orderId;
+          }
+          saveOrdersToStorage();
+          renderStatusBadges();
+          renderFulfillmentAndTable();
+        }
+      } catch (err) {
+        console.error('Sync error:', err);
+      }
+    }
+
+    function openSettingsModal() {
+      document.getElementById('gasUrlInput').value = state.settings.gasUrl || '';
+      document.getElementById('githubImagesBaseInput').value = state.settings.githubImagesBase || '';
+      document.getElementById('senderInfoInput').value = state.settings.senderInfo || '';
+      document.getElementById('settingsModal').classList.add('open');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('open');
+    }
+
+    function saveSettings() {
+      state.settings.gasUrl = document.getElementById('gasUrlInput').value.trim();
+      state.settings.githubImagesBase = document.getElementById('githubImagesBaseInput').value.trim();
+      state.settings.senderInfo = document.getElementById('senderInfoInput').value.trim() || state.settings.senderInfo;
+
+      localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(state.settings));
+      closeSettingsModal();
+      renderStatusBadges();
+      renderSkuGrid();
+      renderShippingLabel();
+    }
+
+    function copyGasCode() {
+      const code = document.getElementById('gasCodeBlock').innerText;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).catch(() => {});
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
